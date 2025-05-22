@@ -1,0 +1,56 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
+}
+
+android {
+    namespace 'com.susyimes.linkapp'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.susyimes.linkapp"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "c7f520bf06059c760a7a69d4", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "771c1dca6462941c4488c6d2", //暂时填写默认值即可.
+        ]
+    }
+
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.activity
+    implementation libs.androidx.constraintlayout
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+    implementation 'cn.jiguang.sdk:jpush:5.6.0'
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
+}

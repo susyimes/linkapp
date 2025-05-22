@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Required -->
+    <permission
+        android:name="com.susyimes.linkapp.permission.JPUSH_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.susyimes.linkapp.permission.JPUSH_MESSAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 适配Android13，弹出通知必须权限-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Optional. Required for location feature -->
+    <!-- 为了提高sdk识别唯一用户的能力，保证消息推送的精准送达，建议集成以下权限（可选）-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- 如您需要接入地理围栏业务，建议集成以下权限（可选）-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- 如您需要对应设备通知相关的能力，建议集成以下权限（可选）-->
+    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE" /><!-- 华为角标 -->
+    <uses-permission android:name="com.vivo.notification.permission.BADGE_ICON" /><!-- VIVO角标权限 -->
+    <uses-permission android:name="com.hihonor.android.launcher.permission.CHANGE_BADGE" /><!--honor 角标-->
+    <uses-permission android:name="android.permission.VIBRATE" /><!--振动器权限，JPUSH支持通知开启振动功能，小米推送必须-->
+
+    <!-- 扩展备用权限（可选）-->
+    <permission android:name="${applicationId}.permission.JOPERATE_MESSAGE" android:protectionLevel="signature"/>
+    <uses-permission android:name="${applicationId}.permission.JOPERATE_MESSAGE" />
+
+    <!-- 13+ 运行时通知权限 -->
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:targetApi="33"/>
+
+    <!-- 前台服务（Android 14 拆分了类型） -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"            /> <!-- ≤Android 13 -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
+        tools:targetApi="34"/>                                             <!-- dataSync -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING"
+        tools:targetApi="34"/>                                             <!-- remoteMessaging -->
+
+    <!-- 开机自启：让 WatchDog / 推送在重启后恢复 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:name=".LinkApp"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Linkapp"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".NotifPermissionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Transparent" />
+
+        <!-- Required SDK 核心功能-->
+        <!-- 可配置 android:process 参数将 PushService 放在其他进程中 -->
+        <service
+            android:name="cn.jpush.android.service.PushService"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTER" />
+                <action android:name="cn.jpush.android.intent.REPORT" />
+                <action android:name="cn.jpush.android.intent.PushService" />
+                <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+            </intent-filter>
+        </service>
+
+
+        <!-- since 3.0.9 Required SDK 核心功能-->
+        <provider
+            android:authorities="com.susyimes.linkapp.DataProvider"
+            android:name="cn.jpush.android.service.DataProvider"
+            tools:replace="android:exported"
+            android:exported="true"
+            android:process=":pushcore"
+            />
+
+        <!-- Required SDK 核心功能-->
+        <receiver
+            android:name="cn.jpush.android.service.PushReceiver"
+            android:exported="false"
+            android:enabled="true" >
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
+                <category android:name="com.susyimes.linkapp"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Required SDK 核心功能-->
+        <activity
+            android:name="cn.jpush.android.ui.PushActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.ui.PushActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.susyimes.linkapp" />
+            </intent-filter>
+        </activity>
+        <!-- SDK 核心功能-->
+        <activity
+            android:name="cn.jpush.android.ui.PopWinActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="true"
+            android:theme="@style/JPushDialogStyle">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="cn.jpush.android.ui.PopWinActivity" />
+                <category android:name="com.susyimes.linkapp" />
+            </intent-filter>
+        </activity>
+
+        <!-- since 5.0.0 Required SDK核心功能 -->
+        <provider
+            android:name="cn.jpush.android.service.InitProvider"
+            android:authorities="${applicationId}.jiguang.InitProvider"
+            android:exported="false"
+            android:readPermission="${applicationId}.permission.JPUSH_MESSAGE"
+            android:writePermission="${applicationId}.permission.JPUSH_MESSAGE" />
+        <!-- Required. For publish channel feature -->
+        <!-- JPUSH_CHANNEL 是为了方便开发者统计 APK 分发渠道。-->
+        <!-- 例如: -->
+        <!-- 发到 Google Play 的 APK 可以设置为 google-play; -->
+        <!-- 发到其他市场的 APK 可以设置为 xxx-market。 -->
+        <!-- Required. AppKey copied from Portal -->
+        <meta-data android:name="JPUSH_APPKEY" android:value="c7f520bf06059c760a7a69d4"/>
+
+        <!-- Since JCore2.0.0 Required SDK核心功能-->
+        <!-- 可配置android:process参数将Service放在其他进程中；android:enabled属性不能是false -->
+        <!-- 这个是自定义Service，要继承极光JCommonService，可以在更多手机平台上使得推送通道保持的更稳定 -->
+        <service android:name=".LinkService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":pushcore">
+            <intent-filter>
+                <action android:name="cn.jiguang.user.service.action" />
+            </intent-filter>
+        </service>
+
+        <!-- Required SDK 核心功能-->
+        <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
+        <receiver android:name=".PushCmdReceiver"
+            android:exported="false">
+            <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+
+                <category android:name="com.susyimes.linkapp" />
+            </intent-filter>
+        </receiver>
+        <!-- 新的 tag/alias 接口结果返回需要开发者配置一个自定义的Service -->
+        <!-- 该广播需要继承 JPush 提供的 JPushMessageReceiver 类, 并如下新增一个 Intent-Filter -->
+        <receiver
+            android:name=".LinkReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVER_MESSAGE" />
+                <category android:name="com.susyimes.linkapp" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".CommandAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service"/>
+        </service>
+    </application>
+
+</manifest>
