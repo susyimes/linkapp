@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
 }
 
 android {
@@ -23,7 +24,12 @@ android {
         ]
     }
 
-
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
+    }
 
     buildTypes {
         release {
@@ -47,10 +53,13 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.activity
     implementation libs.androidx.constraintlayout
+    implementation libs.play.services.location
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
     implementation 'cn.jiguang.sdk:jpush:5.6.0'
     implementation 'androidx.work:work-runtime-ktx:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'
+    implementation "androidx.activity:activity-compose:1.8.1"
+    implementation "androidx.compose.material3:material3:1.2.0"
 }

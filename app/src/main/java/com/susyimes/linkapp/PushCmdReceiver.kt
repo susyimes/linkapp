@@ -52,7 +52,8 @@ class PushCmdReceiver : BroadcastReceiver() {
 //            }
             // ★ 直接携带 JSON 字符串；无 Parcelable 限制
             ctx.sendBroadcast(
-                Intent("com.susyimes.linkapp.REMOTE_CMD")
+
+                Intent("com.susyimes.linkapp.REMOTE_CMD").setPackage(ctx.packageName)
                     .putExtra("payload", cmd)
             )
             Log.d("PUSH_RX", "sendBroadcast ok")

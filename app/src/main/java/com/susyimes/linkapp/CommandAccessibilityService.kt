@@ -36,7 +36,14 @@ class CommandAccessibilityService : AccessibilityService() {
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onServiceConnected() {
-        registerReceiver(cmdReceiver, IntentFilter(ACTION_REMOTE_CMD))
+        val filter = IntentFilter(ACTION_REMOTE_CMD)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // API 33+ 必须声明 exported/not_exported
+            registerReceiver(cmdReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            // 旧版本老写法
+            registerReceiver(cmdReceiver, filter)
+        }
         Log.d("ACC_SVC", "无障碍已连接并监听广播")
     }
 
